@@ -104,6 +104,58 @@ Avant de partager votre travail :
 
 Pour le projet Sokoban, mettez-vous d'accord en équipe sur les noms des méthodes et la représentation de la grille. Le sujet impose une seule classe Java principale ; si plusieurs personnes modifient `Main.java` en même temps, les conflits sont plus probables. Communiquez avant de modifier une partie commune du code.
 
+### Définir une liste commune de méthodes
+
+Avant de coder chacun de votre côté, créez une liste partagée des méthodes prévues. Pour chaque méthode, précisez :
+- son **nom exact** ;
+- son **rôle** ;
+- ses **paramètres** (les informations qu'elle reçoit) ;
+- son **type de retour** (`void`, `boolean`, `int`, etc.) ;
+- le membre qui en est responsable.
+
+Pour le Sokoban, vous pouvez partir des méthodes indiquées dans le sujet :
+
+| Méthode | Rôle convenu |
+|---|---|
+| `afficherGrille()` | Afficher la grille actuelle dans la console. |
+| `deplacerJoueur(...)` | Gérer la demande de déplacement du joueur dans une direction. |
+| `deplacementValide(...)` | Vérifier si une case ou un déplacement est autorisé. |
+| `peutPousser(...)` | Vérifier si une caisse peut être poussée dans la direction demandée. |
+| `deplacerCaisse(...)` | Effectuer le déplacement d'une caisse lorsqu'il est autorisé. |
+| `partieTerminee()` | Indiquer si toutes les caisses sont sur des objectifs. |
+| `chargerNiveau(...)` | Charger la grille d'un niveau. |
+| `jouer()` | Gérer la boucle principale d'une partie. |
+| `resoudreDFS()` | Lancer la recherche de solution en profondeur. |
+| `resoudreBFS()` | Lancer la recherche de solution en largeur. |
+
+Les `(...)` indiquent que les paramètres exacts restent à définir ensemble. Cette liste est un point de départ : vérifiez les signatures attendues dans votre sujet et décidez collectivement des paramètres et types de retour avant de coder.
+
+### Éviter les doublons et les responsabilités floues
+
+- **Une méthode = un rôle clair.** Évitez que deux méthodes fassent exactement la même chose.
+- **Ne recréez pas une méthode déjà prévue** sans en parler à l'équipe.
+- **Réutilisez les méthodes existantes.** Par exemple, si `partieTerminee()` vérifie déjà la victoire, appelez-la au lieu de réécrire cette vérification ailleurs.
+- **Convenez de qui modifie quelle partie** de la classe, surtout si plusieurs branches touchent au même fichier.
+- Si vous devez changer une signature (nom, paramètres ou retour), prévenez l'équipe et mettez à jour tous les appels concernés.
+
+### Se mettre d'accord sur les données communes
+
+Décidez également des noms et du rôle des variables partagées de la classe : par exemple, la grille, la position du joueur, le nombre de déplacements et les données des niveaux. Chaque membre doit savoir quelles variables une méthode peut lire ou modifier.
+
+### Exemple de fiche de méthode
+
+Avant l'implémentation, vous pouvez documenter une méthode ainsi :
+
+```text
+Méthode : partieTerminee()
+Rôle : vérifier si la partie est gagnée.
+Paramètres : aucun.
+Retour : boolean (true si la partie est terminée, sinon false).
+Responsable : membre désigné par le groupe.
+```
+
+**Conseil pratique :** validez cette liste lors d'une courte réunion, puis conservez-la dans le dépôt (dans ce guide ou dans un document séparé). Ainsi, tout le monde utilise les mêmes méthodes et signatures dans la classe commune.
+
 ## 5. Enregistrer les modifications
 
 Ajoutez seulement les fichiers nécessaires au commit :
