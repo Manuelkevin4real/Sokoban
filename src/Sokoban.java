@@ -29,4 +29,16 @@ public class Sokoban {
         // Rechercher une solution en largeur
         return false;
     }
+
+    public void afficherMenu() {
+        // Afficher la grille
+    }
+
+    public void deplacerCaisse(int ligne, int colonne, char direction) {
+        // Afficher la grille
+    }
+
+    public void ComparerAlgo() {
+        // Afficher la grille
+    }
 }
