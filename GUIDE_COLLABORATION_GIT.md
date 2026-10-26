@@ -102,7 +102,7 @@ Avant de partager votre travail :
 - testez la fonctionnalité concernée ;
 - vérifiez que vous n'avez pas inclus de fichiers temporaires, de fichiers compilés ou de modifications sans rapport avec votre tâche.
 
-Pour le projet Sokoban, mettez-vous d'accord en équipe sur les noms des méthodes et la représentation de la grille. Le sujet impose une seule classe Java principale ; si plusieurs personnes modifient `Main.java` en même temps, les conflits sont plus probables. Communiquez avant de modifier une partie commune du code.
+Pour le projet Sokoban, mettez-vous d'accord en équipe sur les noms des méthodes et la représentation de la grille. Le sujet impose une seule classe Java principale ; si plusieurs personnes modifient `Etat.java` en même temps, les conflits sont plus probables. Communiquez avant de modifier une partie commune du code.
 
 ### Définir une liste commune de méthodes
 
@@ -161,7 +161,7 @@ Responsable : membre désigné par le groupe.
 Ajoutez seulement les fichiers nécessaires au commit :
 
 ```bash
-git add src/Main.java
+git add src/Etat.java
 ```
 
 Ou, après avoir vérifié les fichiers concernés, ajoutez toutes les modifications du dossier courant :
@@ -268,8 +268,8 @@ Pour le résoudre :
 
 ```bash
 git status
-git add src/Main.java
-git commit -m "fix: resoudre le conflit dans Main.java"
+git add src/Etat.java
+git commit -m "fix: resoudre le conflit dans Etat.java"
 ```
 
 La dernière commande convient notamment lorsqu'une fusion s'est arrêtée sur un conflit et attend un commit de résolution. Si Git indique qu'une opération de rebase est en cours, suivez plutôt les instructions adaptées au rebase affichées par Git.

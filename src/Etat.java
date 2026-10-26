@@ -1,4 +1,4 @@
-public class Main { 
+public class Etat {
 
     // Constantes des éléments du jeu
     static final char MUR = '#';

@@ -116,7 +116,7 @@ La structure exacte dépend de l'organisation du code. Une organisation possible
 Sokoban-Java/
 │
 ├── src/
-│   └── Main.java
+│   └── Etat.java
 │
 ├── README.md
 │
@@ -124,7 +124,7 @@ Sokoban-Java/
 ```
 
 * `src/` : contient le code source Java.
-* `Main.java` : contient la classe principale et le point d'entrée du programme.
+* `Etat.java` : contient la classe principale et le point d'entrée du programme.
 * `README.md` : présente le projet, ses règles et son fonctionnement.
 * `.gitignore` : définit les fichiers à exclure du suivi Git.
 
@@ -154,16 +154,16 @@ cd Sokoban-Java
 
 ### 3. Compiler le programme
 
-Si le fichier `Main.java` se trouve directement dans le dossier `src/` et que le projet ne nécessite aucune dépendance supplémentaire :
+Si le fichier `Etat.java` se trouve directement dans le dossier `src/` et que le projet ne nécessite aucune dépendance supplémentaire :
 
 ```bash
-javac -d out src/Main.java
+javac -d out src/Etat.java
 ```
 
 ### 4. Exécuter le programme
 
 ```bash
-java -cp out Main
+java -cp out Etat
 ```
 
 **Remarque :** les commandes doivent être adaptées si le fichier principal se trouve dans un autre dossier ou si le code utilise une déclaration de package.
