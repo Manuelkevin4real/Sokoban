@@ -1,372 +1,374 @@
+
 import java.util.Scanner;
 
-public class Sokoban {
+public class Main {
 
-    // ==================================================
-    // 1. ATTRIBUTS
-    // ==================================================
+    static Scanner scanner = new Scanner(System.in);
 
-    // Grille du niveau actuellement joué
-    private char[][] grille;
+    // Constantes des elements du jeu
+    static final char MUR = '#';
+    static final char VIDE = ' ';
+    static final char JOUEUR = '@';
+    static final char CAISSE = '$';
+    static final char OBJECTIF = '.';
+    static final char CAISSE_OBJECTIF = '*';
 
-    // Position du joueur
-    private int ligneJoueur;
-    private int colonneJoueur;
+    // Niveaux du jeu
+    static final String[][] NIVEAUX = {
+        {
+            "########",
+            "#      #",
+            "# .    #",
+            "# $    #",
+            "#  @   #",
+            "#      #",
+            "########"
+        },
+        {
+            "########",
+            "#      #",
+            "#  .   #",
+            "#  $   #",
+            "#  @   #",
+            "#      #",
+            "########"
+        },
+        {
+            "########",
+            "#      #",
+            "#   .  #",
+            "#   $  #",
+            "#  @   #",
+            "#      #",
+            "########"
+        }
+    };
 
-    // Nombre de mouvements effectués
-    private int mouvements;
+    // Menu principal
+    static void menuPrincipal() {
 
-    // Niveaux disponibles
-    private char[][][] niveaux;
+        boolean continuer = true;
 
-    // Numéro du niveau actuellement chargé
-    private int niveauActuel;
+        while (continuer) {
 
-    // Scanner pour lire les commandes au clavier
-    private Scanner scanner = new Scanner(System.in);
+            System.out.println("\n================================");
+            System.out.println("          SOKOBAN JAVA");
+            System.out.println("================================");
+            System.out.println("1. Nouvelle partie");
+            System.out.println("2. Choisir un niveau");
+            System.out.println("3. Resoudre automatiquement");
+            System.out.println("4. Comparer DFS / BFS");
+            System.out.println("5. Afficher les regles");
+            System.out.println("6. Quitter");
+            System.out.print("Votre choix : ");
 
+            String choix = scanner.nextLine().trim();
 
-    // ==================================================
-    // 2. CONSTRUCTEUR
-    // ==================================================
+            switch (choix) {
 
-    public Sokoban() {
+                case "1":
+                    jouer(0);
+                    break;
 
-        // TODO : Initialiser les niveaux disponibles
+                case "2":
+                    choisirNiveau();
+                    break;
 
-        // TODO : Initialiser la grille
+                case "3":
+                    System.out.println("Resolution automatique non implementee.");
+                    break;
 
-        // TODO : Initialiser la position du joueur
+                case "4":
+                    System.out.println("Comparaison DFS / BFS non implementee.");
+                    break;
 
-        // TODO : Initialiser le compteur de mouvements
+                case "5":
+                    afficherRegles();
+                    break;
 
-        // TODO : Initialiser le niveau actuel
+                case "6":
+                    continuer = false;
+                    System.out.println("Au revoir !");
+                    break;
+
+                default:
+                    System.out.println("Choix invalide.");
+            }
+        }
     }
 
+    // Choisir un niveau
+    static void choisirNiveau() {
 
-    // ==================================================
-    // 3. POINT D'ENTRÉE DU PROGRAMME
-    // ==================================================
+        System.out.println("\n=== CHOIX DU NIVEAU ===");
 
+        for (int i = 0; i < NIVEAUX.length; i++) {
+            System.out.println((i + 1) + ". Niveau " + (i + 1));
+        }
+
+        System.out.print("Votre choix : ");
+
+        try {
+            int choix = Integer.parseInt(scanner.nextLine());
+
+            if (choix >= 1 && choix <= NIVEAUX.length) {
+                jouer(choix - 1);
+            } else {
+                System.out.println("Niveau invalide.");
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println("Veuillez entrer un nombre.");
+        }
+    }
+
+    // Lancer une partie
+    static void jouer(int numeroNiveau) {
+
+        String[] niveau = NIVEAUX[numeroNiveau];
+
+        int lignes = niveau.length;
+        int colonnes = niveau[0].length();
+
+        // Creation du plateau
+        char[][] plateau = new char[lignes][colonnes];
+
+        int joueurX = 0;
+        int joueurY = 0;
+
+        int nombreCaisses = 0;
+        int nombreObjectifs = 0;
+
+        // Initialisation du plateau
+        for (int i = 0; i < lignes; i++) {
+
+            for (int j = 0; j < colonnes; j++) {
+
+                char caractere = niveau[i].charAt(j);
+
+                if (caractere == JOUEUR) {
+
+                    joueurX = i;
+                    joueurY = j;
+                    plateau[i][j] = VIDE;
+
+                } else {
+
+                    plateau[i][j] = caractere;
+                }
+
+                if (caractere == CAISSE) {
+                    nombreCaisses++;
+                }
+
+                if (caractere == OBJECTIF) {
+                    nombreObjectifs++;
+                }
+            }
+        }
+
+        System.out.println("\n=== NIVEAU " + (numeroNiveau + 1) + " ===");
+
+        boolean partieEnCours = true;
+        int mouvements = 0;
+
+        while (partieEnCours) {
+
+            afficherPlateau(plateau, joueurX, joueurY);
+
+            System.out.println("\nDeplacements : Z / Q / S / D");
+            System.out.println("X : Retour au menu");
+            System.out.println("Mouvements : " + mouvements);
+
+            System.out.print("Votre mouvement : ");
+
+            String commande = scanner.nextLine().toLowerCase().trim();
+
+            if (commande.equals("x")) {
+                System.out.println("Retour au menu...");
+                break;
+            }
+
+            // Direction du deplacement
+            int dx = 0;
+            int dy = 0;
+
+            switch (commande) {
+
+                case "z":
+                    dx = -1;
+                    break;
+
+                case "s":
+                    dx = 1;
+                    break;
+
+                case "q":
+                    dy = -1;
+                    break;
+
+                case "d":
+                    dy = 1;
+                    break;
+
+                default:
+                    System.out.println("Commande invalide.");
+                    continue;
+            }
+
+            // Nouvelle position
+            int nouveauX = joueurX + dx;
+            int nouveauY = joueurY + dy;
+
+            // Verification des limites
+            if (nouveauX < 0 || nouveauX >= lignes ||
+                nouveauY < 0 || nouveauY >= colonnes) {
+
+                System.out.println("Deplacement impossible.");
+                continue;
+            }
+
+            char destination = plateau[nouveauX][nouveauY];
+
+            // Verification des murs
+            if (destination == MUR) {
+
+                System.out.println("Impossible : il y a un mur !");
+                continue;
+            }
+
+            // Gestion des caisses
+            if (destination == CAISSE ||
+                destination == CAISSE_OBJECTIF) {
+
+                int caisseX = nouveauX + dx;
+                int caisseY = nouveauY + dy;
+
+                // Verification de la position derriere la caisse
+                if (caisseX < 0 || caisseX >= lignes ||
+                    caisseY < 0 || caisseY >= colonnes) {
+
+                    System.out.println("Impossible de pousser la caisse.");
+                    continue;
+                }
+
+                char derriere = plateau[caisseX][caisseY];
+
+                // Une caisse ne peut pas traverser un mur
+                // ni pousser une autre caisse
+                if (derriere != VIDE && derriere != OBJECTIF) {
+
+                    System.out.println("Impossible de pousser la caisse !");
+                    continue;
+                }
+
+                // Deplacement de la caisse
+                if (derriere == OBJECTIF) {
+                    plateau[caisseX][caisseY] = CAISSE_OBJECTIF;
+                } else {
+                    plateau[caisseX][caisseY] = CAISSE;
+                }
+
+                // Restauration de l'ancienne position de la caisse
+                if (destination == CAISSE_OBJECTIF) {
+                    plateau[nouveauX][nouveauY] = OBJECTIF;
+                } else {
+                    plateau[nouveauX][nouveauY] = VIDE;
+                }
+            }
+
+            // Deplacement du joueur
+            joueurX = nouveauX;
+            joueurY = nouveauY;
+
+            mouvements++;
+
+            // Verification de la victoire
+            if (verifierVictoire(plateau, nombreCaisses,
+                                 nombreObjectifs)) {
+
+                afficherPlateau(plateau, joueurX, joueurY);
+
+                System.out.println("\n================================");
+                System.out.println("       BRAVO ! VICTOIRE !");
+                System.out.println("================================");
+                System.out.println("Nombre de mouvements : " + mouvements);
+
+                partieEnCours = false;
+            }
+        }
+    }
+
+    // Afficher le plateau
+    static void afficherPlateau(char[][] plateau,
+                                int joueurX, int joueurY) {
+
+        System.out.println();
+
+        for (int i = 0; i < plateau.length; i++) {
+
+            for (int j = 0; j < plateau[i].length; j++) {
+
+                if (i == joueurX && j == joueurY) {
+                    System.out.print(JOUEUR);
+                } else {
+                    System.out.print(plateau[i][j]);
+                }
+            }
+
+            System.out.println();
+        }
+    }
+
+    // Verifier si toutes les caisses sont sur les objectifs
+    static boolean verifierVictoire(char[][] plateau,
+                                    int nombreCaisses,
+                                    int nombreObjectifs) {
+
+        int caissesPlacees = 0;
+
+        for (int i = 0; i < plateau.length; i++) {
+
+            for (int j = 0; j < plateau[i].length; j++) {
+
+                if (plateau[i][j] == CAISSE_OBJECTIF) {
+                    caissesPlacees++;
+                }
+            }
+        }
+
+        return nombreCaisses == nombreObjectifs &&
+               caissesPlacees == nombreCaisses;
+    }
+
+    // Afficher les regles
+    static void afficherRegles() {
+
+        System.out.println("\n========== REGLES DU SOKOBAN ==========");
+        System.out.println("@ : Joueur");
+        System.out.println("$ : Caisse");
+        System.out.println(". : Objectif");
+        System.out.println("* : Caisse sur un objectif");
+        System.out.println("# : Mur");
+        System.out.println();
+        System.out.println("Z : Monter");
+        System.out.println("S : Descendre");
+        System.out.println("Q : Gauche");
+        System.out.println("D : Droite");
+        System.out.println("X : Retour au menu");
+        System.out.println();
+        System.out.println("Le but est de pousser toutes les");
+        System.out.println("caisses sur les cases objectifs.");
+        System.out.println("Attention : les caisses ne peuvent");
+        System.out.println("pas etre tirees.");
+        System.out.println("=======================================");
+    }
+
+    // Programme principal
     public static void main(String[] args) {
 
-        Sokoban jeu = new Sokoban();
+        menuPrincipal();
 
-        // TODO : Lancer le menu principal
-        jeu.afficherMenu();
+        scanner.close();
     }
-
-
-    // ==================================================
-    // 4. GESTION DU MENU
-    // ==================================================
-
-    public void afficherMenu() {
-
-        // TODO : Afficher le menu principal :
-        // 1. Nouvelle partie
-        // 2. Choisir un niveau
-        // 3. Résoudre automatiquement
-        // 4. Comparer DFS / BFS
-        // 5. Afficher les règles
-        // 6. Quitter
-
-        // TODO : Lire et vérifier le choix du joueur
-
-        // TODO : Appeler la méthode correspondant au choix
-    }
-
-
-    // ==================================================
-    // 5. GESTION DES NIVEAUX
-    // ==================================================
-
-    public void chargerNiveau(int niveau) {
-
-        // TODO : Vérifier que le numéro du niveau est valide
-
-        // TODO : Charger le niveau sélectionné dans la grille
-
-        // TODO : Copier le niveau pour éviter de modifier
-        //        directement le modèle original
-
-        // TODO : Rechercher la position initiale du joueur
-
-        // TODO : Initialiser le compteur de mouvements
-    }
-
-
-    // ==================================================
-    // 6. AFFICHAGE DE LA GRILLE
-    // ==================================================
-
-    public void afficherGrille() {
-
-        // TODO : Parcourir les lignes de la grille
-
-        // TODO : Parcourir les colonnes de chaque ligne
-
-        // TODO : Afficher chaque caractère
-
-        // TODO : Passer à la ligne suivante après chaque rangée
-
-        // TODO : Afficher éventuellement le nombre de mouvements
-    }
-
-
-    // ==================================================
-    // 7. DÉROULEMENT D'UNE PARTIE
-    // ==================================================
-
-    public void jouer() {
-
-        // TODO : Charger ou vérifier le niveau actuel
-
-        // TODO : Afficher la grille initiale
-
-        // TODO : Répéter les opérations suivantes :
-        //        - Lire une commande
-        //        - Vérifier la commande
-        //        - Déplacer le joueur
-        //        - Afficher la grille
-        //        - Vérifier la victoire
-
-        // TODO : Permettre au joueur de quitter avec la touche x
-
-        // TODO : Afficher le message de victoire et le nombre
-        //        de mouvements lorsque le niveau est terminé
-    }
-
-
-    // ==================================================
-    // 8. DÉPLACEMENT DU JOUEUR
-    // ==================================================
-
-    public boolean deplacerJoueur(char direction) {
-
-        // TODO : Calculer la nouvelle position du joueur
-        //        en fonction de la direction :
-        //        z = haut, s = bas, q = gauche, d = droite
-
-        // TODO : Vérifier que la commande est valide
-
-        // TODO : Vérifier que le déplacement est autorisé
-
-        // TODO : Si une caisse est présente, vérifier si elle
-        //        peut être poussée
-
-        // TODO : Déplacer le joueur si le mouvement est possible
-
-        // TODO : Mettre à jour le compteur de mouvements
-
-        // TODO : Retourner true si le déplacement a réussi
-        //        et false sinon
-
-        return false;
-    }
-
-
-    // ==================================================
-    // 9. VALIDATION DU DÉPLACEMENT
-    // ==================================================
-
-    public boolean deplacementValide(int ligne, int colonne) {
-
-        // TODO : Vérifier que les coordonnées se trouvent
-        //        à l'intérieur des limites de la grille
-
-        // TODO : Vérifier que la case n'est pas un mur
-
-        // TODO : Retourner true si la case est accessible
-
-        return false;
-    }
-
-
-    // ==================================================
-    // 10. GESTION DES CAISSES
-    // ==================================================
-
-    public boolean peutPousser(
-            int ligne, int colonne, char direction) {
-
-        // TODO : Calculer la position située derrière la caisse
-
-        // TODO : Vérifier que cette position se trouve
-        //        dans les limites de la grille
-
-        // TODO : Vérifier que la case derrière la caisse
-        //        ne contient ni mur ni autre caisse
-
-        // TODO : Retourner true si la caisse peut être poussée
-
-        return false;
-    }
-
-
-    public void deplacerCaisse(
-            int ligne, int colonne, char direction) {
-
-        // TODO : Calculer la nouvelle position de la caisse
-
-        // TODO : Vérifier que le déplacement est autorisé
-
-        // TODO : Déplacer la caisse sur la nouvelle case
-
-        // TODO : Préserver les objectifs sous les caisses
-        //        et le joueur
-    }
-
-
-    // ==================================================
-    // 11. VÉRIFICATION DE LA VICTOIRE
-    // ==================================================
-
-    public boolean partieTerminee() {
-
-        // TODO : Parcourir la grille
-
-        // TODO : Vérifier que toutes les caisses sont placées
-        //        sur des objectifs
-
-        // TODO : Retourner true si toutes les caisses sont
-        //        sur les objectifs, false sinon
-
-        return false;
-    }
-
-
-    // ==================================================
-    // 12. RÉSOLUTION AUTOMATIQUE : DFS
-    // ==================================================
-
-    public boolean resoudreDFS() {
-
-        // TODO : Construire l'état initial de la recherche
-
-        // TODO : Implémenter une recherche en profondeur
-        //        (Depth-First Search)
-
-        // TODO : Explorer les mouvements possibles
-
-        // TODO : Éviter de revisiter les états déjà explorés
-
-        // TODO : Détecter un état gagnant
-
-        // TODO : Conserver le chemin de la solution
-
-        // TODO : Afficher la solution et les statistiques
-
-        // TODO : Retourner true si une solution est trouvée
-
-        return false;
-    }
-
-
-    // ==================================================
-    // 13. RÉSOLUTION AUTOMATIQUE : BFS
-    // ==================================================
-
-    public boolean resoudreBFS() {
-
-        // TODO : Construire l'état initial de la recherche
-
-        // TODO : Implémenter une file avec des tableaux
-        //        pour gérer les états à explorer
-
-        // TODO : Explorer les états par distance croissante
-
-        // TODO : Éviter de revisiter les états déjà explorés
-
-        // TODO : Détecter un état gagnant
-
-        // TODO : Conserver le chemin de la solution
-
-        // TODO : Afficher la solution et les statistiques
-
-        // TODO : Retourner true si une solution est trouvée
-
-        return false;
-    }
-
-
-    // ==================================================
-    // 14. COMPARAISON DES ALGORITHMES
-    // ==================================================
-
-    public void comparerAlgorithmes() {
-
-        // TODO : Conserver une copie du niveau initial
-
-        // TODO : Exécuter DFS sur une copie de l'état initial
-
-        // TODO : Enregistrer le résultat, le nombre de mouvements
-        //        et le nombre d'états explorés
-
-        // TODO : Restaurer l'état initial
-
-        // TODO : Exécuter BFS sur le même niveau
-
-        // TODO : Enregistrer les mêmes statistiques
-
-        // TODO : Afficher les résultats des deux algorithmes
-
-        // TODO : Comparer les longueurs des solutions
-        //        et les nombres d'états explorés
-    }
-
-
-    // ==================================================
-    // 15. AFFICHAGE DES RÈGLES
-    // ==================================================
-
-    public void afficherRegles() {
-
-        // TODO : Expliquer les commandes :
-        //        z = haut
-        //        s = bas
-        //        q = gauche
-        //        d = droite
-        //        x = quitter
-
-        // TODO : Expliquer les règles de déplacement
-
-        // TODO : Expliquer la condition de victoire
-    }
-
-
-    // ==================================================
-    // 16. FONCTIONNALITÉS BONUS (FACULTATIVES)
-    // ==================================================
-
-    public void annulerDernierMouvement() {
-
-        // TODO : Conserver l'état précédent de la grille
-
-        // TODO : Restaurer la position précédente du joueur
-        //        et des caisses
-
-        // TODO : Mettre à jour le compteur de mouvements
-    }
-
-
-    public void redemarrerNiveau() {
-
-        // TODO : Recharger le niveau actuel
-
-        // TODO : Réinitialiser le compteur de mouvements
-
-        // TODO : Réinitialiser la position du joueur
-    }
-
-
-    public boolean situationBloquee() {
-
-        // TODO : Détecter les situations simples dans lesquelles
-        //        une caisse ne peut plus atteindre un objectif
-
-        return false;
-    }
-
 }
-
